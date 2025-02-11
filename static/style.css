@@ -1,0 +1,100 @@
+﻿.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.directory {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+}
+
+.dir-name {
+    font-size: 16px;
+    color: #333;
+}
+
+.run-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.run-button:hover {
+    background: #218838;
+}
+
+.error {
+    color: #dc3545;
+    padding: 10px;
+    background: #f8d7da;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.directory {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+    transition: transform 0.2s;
+}
+
+.directory:hover {
+    transform: translateX(5px);
+}
+
+.dir-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.run-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.run-button:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.error {
+    color: #dc3545;
+    padding: 15px;
+    background: #f8d7da;
+    border-radius: 4px;
+    margin: 10px 0;
+    text-align: center;
+}

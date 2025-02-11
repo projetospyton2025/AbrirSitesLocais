@@ -1,0 +1,4 @@
+﻿flask==3.0.0
+webbrowser==
+
+pip install webbrowser
