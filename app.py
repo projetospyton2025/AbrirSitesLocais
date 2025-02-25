@@ -156,7 +156,8 @@ def open_all_sites():
                     time.sleep(0.3)
                     
                 browser_opened = True
-            except:
+            except Exception as browser_error:
+                app.logger.error(f"Erro ao abrir navegador: {str(browser_error)}")
                 # Se falhar, o frontend lidará com isso
                 pass
         
@@ -164,13 +165,17 @@ def open_all_sites():
             'success': True,
             'message': f'Todos os {len(SITES)} sites foram' + (f' abertos no {BROWSER_NAME}' if browser_opened else ' preparados para abrir'),
             'urls': urls,
-            'browser_opened': browser_opened
+            'browser_opened': browser_opened,
+            'is_cloud': IS_CLOUD
         })
     except Exception as e:
+        app.logger.error(f"Erro ao preparar sites: {str(e)}")
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': str(e),
+            'is_cloud': IS_CLOUD
         })
+
 
 if __name__ == '__main__':
     # Use a porta fornecida pelo ambiente ou 5001 como padrão

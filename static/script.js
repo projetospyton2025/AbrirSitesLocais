@@ -38,56 +38,62 @@
         sitesContainer.appendChild(openAllSection);
 
         // Handler para o botão de abrir todos
-        document.getElementById('openAllButton').addEventListener('click', async function() {
-            const button = this;
-            const originalText = button.textContent;
-            
-            try {
-                // Desabilita o botão e mostra loading
-                button.disabled = true;
-                button.textContent = 'Abrindo todos os sites...';
+// Função para abrir todos os sites
+document.getElementById('openAllButton').addEventListener('click', async function() {
+    const button = this;
+    const originalText = button.textContent;
+    
+    try {
+        // Desabilita o botão e mostra loading
+        button.disabled = true;
+        button.textContent = 'Abrindo todos os sites...';
+        
+        // Chama a API para abrir todos os sites
+        const response = await fetch('/open_all_sites');
+        const result = await response.json();
+        
+        if (result.success) {
+            // Se estamos na nuvem ou se o navegador não abriu via backend
+            if (!result.browser_opened && result.urls) {
+                // Armazena as URLs para abrir com atraso
+                const urlsToOpen = [...result.urls];
                 
-                // Chama a API para abrir todos os sites
-                const response = await fetch('/open_all_sites');
-                const result = await response.json();
+                // Informa o usuário sobre o bloqueador de pop-ups
+                alert('Serão abertas múltiplas abas. Se algumas não abrirem, verifique se o bloqueador de pop-ups está ativo.');
                 
-                if (result.success) {
-                    // Se estamos na nuvem ou se o navegador não abriu, abre via JavaScript
-                    if (!result.browser_opened && result.urls) {
-                        // Abre o primeiro site em uma nova janela
-                        const firstWindow = window.open(result.urls[0], '_blank');
-                        
-                        // Se o bloqueador de pop-ups impediu a abertura
-                        if (!firstWindow || firstWindow.closed || typeof firstWindow.closed === 'undefined') {
-                            alert('Por favor, permita pop-ups para este site para abrir todos os links.');
-                            // Tenta abrir só o primeiro site
-                            window.open(result.urls[0], '_blank');
-                        } else {
-                            // Espera um pouco e abre os outros sites
-                            setTimeout(() => {
-                                // Abre os outros sites em novas abas
-                                for (let i = 1; i < result.urls.length; i++) {
-                                    window.open(result.urls[i], '_blank');
-                                }
-                            }, 500);
-                        }
-                    }
-                    
-                    button.textContent = 'Sites abertos!';
-                    // Aguarda um pouco antes de restaurar o texto original
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                } else {
-                    alert(`Erro: ${result.message}`);
+                // Abre a primeira URL
+                window.open(urlsToOpen[0], '_blank');
+                
+                // Abre as demais URLs com um pequeno atraso entre elas
+                for (let i = 1; i < urlsToOpen.length; i++) {
+                    // Usa uma IIFE com setTimeout para criar um closure para cada URL
+                    (function(url, index) {
+                        setTimeout(() => {
+                            window.open(url, '_blank');
+                            console.log(`Abrindo site ${index+1}: ${url}`);
+                        }, index * 800); // 800ms de atraso entre cada abertura
+                    })(urlsToOpen[i], i);
                 }
-            } catch (error) {
-                alert('Erro ao abrir os sites');
-                console.error(error);
-            } finally {
-                // Restaura o botão ao estado original
+            }
+            
+            button.textContent = 'Sites abertos!';
+            // Aguarda um pouco antes de restaurar o texto original
+            setTimeout(() => {
                 button.disabled = false;
                 button.textContent = originalText;
-            }
-        });
+            }, 3000);
+        } else {
+            alert(`Erro: ${result.message}`);
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    } catch (error) {
+        alert('Erro ao abrir os sites');
+        console.error(error);
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+});
 
         // Adiciona os sites
         const sitesGrid = document.createElement('div');
