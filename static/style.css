@@ -6,6 +6,8 @@
     --text-color: #333;
     --error-color: #dc3545;
     --error-bg: #f8d7da;
+    --firefox-color: #ff9400;
+    --edge-color: #0078d7;
 }
 
 body {
@@ -31,6 +33,27 @@ h1 {
     margin-bottom: 30px;
     padding-bottom: 10px;
     border-bottom: 2px solid #eee;
+}
+
+.browser-info {
+    text-align: center;
+    padding: 5px 10px;
+    margin: -20px auto 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    width: fit-content;
+}
+
+.browser-firefox {
+    background-color: rgba(255, 148, 0, 0.1);
+    color: var(--firefox-color);
+    border: 1px solid var(--firefox-color);
+}
+
+.browser-edge {
+    background-color: rgba(0, 120, 215, 0.1);
+    color: var(--edge-color);
+    border: 1px solid var(--edge-color);
 }
 
 section {
@@ -140,13 +163,6 @@ section {
     margin: 10px 0;
     text-align: center;
 }
-        footer {
-            color: #161515;
-            text-align: center;
-            padding: 5px;
-            margin-bottom: auto;
-            margin-top: 10px; /* Espaço acima do rodapé */
-         }
 
 /* Responsividade */
 @media (max-width: 768px) {
