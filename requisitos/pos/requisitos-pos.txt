@@ -1,0 +1,337 @@
+preciso que abra o arquivo *.py quando cliclado... usando o firefox.exe
+"C:\Program Files\Firefox Developer Edition\firefox.exe"
+"C:\Program Files\Firefox Developer Edition"
+
+ Diretório: J:\Meu Drive\ProjetosPython\Loterias\AbrirSitesLocais
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        25/02/2025     06:35                requisitos
+d-----        10/02/2025     10:12                venv
+d-----        10/02/2025     11:40                templates
+d-----        10/02/2025     19:51                static
+------        10/02/2025     09:55           1096 LICENSE
+------        10/02/2025     09:55             51 README.md
+------        24/02/2025     18:35             56 requirements.txt
+------        10/02/2025     20:03           3866 app.py
+
+
+PRECISO QUE SEJA ABERTO EXATAMENTE ESTES ENDEREÇOS...
+https://portifoliodomaia.netlify.app/
+https://loteriascaixa.netlify.app/
+https://estrategiasparamegasena.netlify.app/
+https://resumomegasena.onrender.com/
+https://combinacao-i.onrender.com/
+https://palpitesmegasena.onrender.com/
+https://palpitesms.onrender.com/
+https://colunas.onrender.com/
+https://estrategiasparamegasena.netlify.app/historicoderesultados/index1a
+https://estrategiasparamegasena.netlify.app/historicoderesultados/index5
+https://palpitesmegas.onrender.com/
+
+
+
+
+flask==3.0.0
+webbrowser
+
+#pip install webbrowser
+
+from flask import Flask, render_template, jsonify
+import os
+import subprocess
+import time
+import webbrowser
+
+app = Flask(__name__)
+
+# Configuração do Firefox Developer Edition
+FIREFOX_PATH = r"C:\Program Files\Firefox Developer Edition\firefox.exe"
+webbrowser.register('firefox-dev', None, webbrowser.BackgroundBrowser(FIREFOX_PATH))
+
+# Mapeamento dos diretórios, comandos e portas
+DIRECTORIES = {
+    'Super7': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Super7',
+        'command': 'app.py',
+        'port': 5000
+    },
+    'Lotofacil_5Fixas': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
+        'command': 'GerarJogos5Fixas.py',
+        'port': 5002
+    },
+    'Lotofacil_10Fixas': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
+        'command': 'GerarJogos10Fixas.py',
+        'port': 5003
+    },
+    'Lotofacil_Normal': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
+        'command': 'GerarJogosNormais.py',
+        'port': 5004
+    },
+    'DiaDeSorte': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\DiaDeSorte',
+        'command': 'app.py',
+        'port': 5005
+    },
+    'LotofacilConf': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Conferidores\LotofacilConf',
+        'command': 'app.py',
+        'port': 5006
+    },
+    'MegaSenaConf': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Conferidores\megasenaconferidor',
+        'command': 'app.py',
+        'port': 5007
+    },
+    'MegaSenaGerador': {
+        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Geradores\MegaSenaGerador',
+        'command': 'app.py',
+        'port': 5008
+    }
+}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/list_dirs')
+def list_dirs():
+    try:
+        dirs = []
+        for name, info in DIRECTORIES.items():
+            script_path = os.path.join(info['path'], info['command'])
+            has_script = os.path.exists(script_path)
+            dirs.append({
+                'name': name,
+                'path': info['path'],
+                'command': info['command'],
+                'has_script': has_script,
+                'port': info.get('port', None)
+            })
+        return jsonify({'directories': dirs})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/run_app/<name>')
+def run_app(name):
+    try:
+        if name in DIRECTORIES:
+            info = DIRECTORIES[name]
+            script_path = os.path.join(info['path'], info['command'])
+            
+            if os.path.exists(script_path):
+                os.chdir(info['path'])
+                subprocess.Popen(['python', info['command']])
+                
+                # Aguarda um momento para o servidor iniciar
+                time.sleep(2)
+                
+                # Abre o Firefox Developer Edition na porta correta
+                if 'port' in info:
+                    url = f"http://localhost:{info['port']}"
+                    webbrowser.get('firefox-dev').open(url)
+                
+                return jsonify({
+                    'success': True, 
+                    'message': f'{info["command"]} executado e aberto no Firefox'
+                })
+                
+            return jsonify({
+                'success': False, 
+                'message': f'{info["command"]} não encontrado'
+            })
+        return jsonify({
+            'success': False, 
+            'message': 'Diretório não encontrado'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False, 
+            'message': str(e)
+        })
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5001)
+	
+	document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        const response = await fetch('/list_dirs');
+        const data = await response.json();
+        
+        const container = document.getElementById('directories');
+        if (data.error) {
+            container.innerHTML = `<div class="error">${data.error}</div>`;
+            return;
+        }
+
+        data.directories.forEach(dir => {
+            const dirDiv = document.createElement('div');
+            dirDiv.className = 'directory';
+            dirDiv.innerHTML = `
+                <div class="dir-info">
+                    <span class="dir-name">${dir.name}</span>
+                    <span class="command">${dir.command}</span>
+                </div>
+                ${dir.has_script ? `
+                    <button class="run-button" onclick="runApp('${dir.name}')">
+                        Executar ${dir.command}
+                    </button>
+                ` : ''}
+            `;
+            container.appendChild(dirDiv);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('directories').innerHTML = 
+            `<div class="error">Erro ao carregar diretórios</div>`;
+    }
+});
+
+async function runApp(name) {
+    const button = event.target;
+    const originalText = button.textContent;
+    
+    try {
+        // Desabilita o botão e mostra loading
+        button.disabled = true;
+        button.textContent = 'Iniciando...';
+        
+        const response = await fetch(`/run_app/${name}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            button.textContent = 'Abrindo navegador...';
+            // Espera um pouco mais para garantir que o navegador abriu
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+            alert(`Erro: ${result.message}`);
+        }
+    } catch (error) {
+        alert('Erro ao executar o comando');
+    } finally {
+        // Restaura o botão ao estado original
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Navegador de Diretórios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Navegador de Diretórios</h1>
+        <div id="directories"></div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.directory {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+}
+
+.dir-name {
+    font-size: 16px;
+    color: #333;
+}
+
+.run-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.run-button:hover {
+    background: #218838;
+}
+
+.error {
+    color: #dc3545;
+    padding: 10px;
+    background: #f8d7da;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.directory {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+    transition: transform 0.2s;
+}
+
+.directory:hover {
+    transform: translateX(5px);
+}
+
+.dir-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.run-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.run-button:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.error {
+    color: #dc3545;
+    padding: 15px;
+    background: #f8d7da;
+    border-radius: 4px;
+    margin: 10px 0;
+    text-align: center;
+}

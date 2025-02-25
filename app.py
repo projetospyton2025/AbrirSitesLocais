@@ -1,116 +1,127 @@
 ﻿from flask import Flask, render_template, jsonify
 import os
-import subprocess
 import time
 import webbrowser
 
 app = Flask(__name__)
 
-# Configuração do Firefox Developer Edition
+# Configuração do navegador
 FIREFOX_PATH = r"C:\Program Files\Firefox Developer Edition\firefox.exe"
-webbrowser.register('firefox-dev', None, webbrowser.BackgroundBrowser(FIREFOX_PATH))
+EDGE_PATH = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 
-# Mapeamento dos diretórios, comandos e portas
-DIRECTORIES = {
-    'Super7': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Super7',
-        'command': 'app.py',
-        'port': 5000
+# Verifica se o Firefox Developer está instalado
+if os.path.exists(FIREFOX_PATH):
+    webbrowser.register('browser', None, webbrowser.BackgroundBrowser(FIREFOX_PATH))
+    BROWSER_NAME = "Firefox Developer Edition"
+else:
+    # Se não estiver, usa o Edge
+    webbrowser.register('browser', None, webbrowser.BackgroundBrowser(EDGE_PATH))
+    BROWSER_NAME = "Microsoft Edge"
+
+# Lista de sites externos para abrir
+SITES = [
+    {
+        'name': 'Portifólio do Maia',
+        'url': 'https://portifoliodomaia.netlify.app/'
     },
-    'Lotofacil_5Fixas': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
-        'command': 'GerarJogos5Fixas.py',
-        'port': 5002
+    {
+        'name': 'Loterias Caixa',
+        'url': 'https://loteriascaixa.netlify.app/'
     },
-    'Lotofacil_10Fixas': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
-        'command': 'GerarJogos10Fixas.py',
-        'port': 5003
+    {
+        'name': 'Estratégias para Mega Sena',
+        'url': 'https://estrategiasparamegasena.netlify.app/'
     },
-    'Lotofacil_Normal': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Lotofacil\geradorJogos',
-        'command': 'GerarJogosNormais.py',
-        'port': 5004
+    {
+        'name': 'Estatísticas | Resumo *',
+        'url': 'https://resumomegasena.onrender.com/'
     },
-    'DiaDeSorte': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\DiaDeSorte',
-        'command': 'app.py',
-        'port': 5005
+    {
+        'name': 'Geradores | Combinação II',
+        'url': 'https://combinacao-i.onrender.com/'
     },
-    'LotofacilConf': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Conferidores\LotofacilConf',
-        'command': 'app.py',
-        'port': 5006
+    {
+        'name': 'Estratégias | Palpites I',
+        'url': 'https://palpitesmegasena.onrender.com/'
     },
-    'MegaSenaConf': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Conferidores\megasenaconferidor',
-        'command': 'app.py',
-        'port': 5007
+    {
+        'name': 'Estratégias | Palpites II',
+        'url': 'https://palpitesms.onrender.com/'
     },
-    'MegaSenaGerador': {
-        'path': r'J:\Meu Drive\ProjetosPython\Loterias\Geradores\MegaSenaGerador',
-        'command': 'app.py',
-        'port': 5008
+    {
+        'name': 'Estratégias | Colunas',
+        'url': 'https://colunas.onrender.com/'
+    },
+    {
+        'name': 'Estatísticas | Quadrantes',
+        'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index1a'
+    },
+    {
+        'name': 'Resultados | Todos sorteios + filtro avançado',
+        'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index5'
+    },
+    {
+        'name': 'Estratégias | Palpites III',
+        'url': 'https://palpitesmegas.onrender.com/'
     }
-}
+]
+
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/list_dirs')
-def list_dirs():
+@app.route('/list_sites')
+def list_sites():
     try:
-        dirs = []
-        for name, info in DIRECTORIES.items():
-            script_path = os.path.join(info['path'], info['command'])
-            has_script = os.path.exists(script_path)
-            dirs.append({
-                'name': name,
-                'path': info['path'],
-                'command': info['command'],
-                'has_script': has_script,
-                'port': info.get('port', None)
-            })
-        return jsonify({'directories': dirs})
+        return jsonify({
+            'sites': SITES,
+            'browser_info': {
+                'name': BROWSER_NAME,
+                'is_firefox_dev': os.path.exists(FIREFOX_PATH)
+            }
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/run_app/<name>')
-def run_app(name):
+@app.route('/open_site/<int:site_id>')
+def open_site(site_id):
     try:
-        if name in DIRECTORIES:
-            info = DIRECTORIES[name]
-            script_path = os.path.join(info['path'], info['command'])
-            
-            if os.path.exists(script_path):
-                os.chdir(info['path'])
-                subprocess.Popen(['python', info['command']])
-                
-                # Aguarda um momento para o servidor iniciar
-                time.sleep(2)
-                
-                # Abre o Firefox Developer Edition na porta correta
-                if 'port' in info:
-                    url = f"http://localhost:{info['port']}"
-                    webbrowser.get('firefox-dev').open(url)
-                
-                return jsonify({
-                    'success': True, 
-                    'message': f'{info["command"]} executado e aberto no Firefox'
-                })
-                
+        if 0 <= site_id < len(SITES):
+            site = SITES[site_id]
+            # Abre o site no navegador selecionado
+            webbrowser.get('browser').open(site['url'])
             return jsonify({
-                'success': False, 
-                'message': f'{info["command"]} não encontrado'
+                'success': True,
+                'message': f'Site {site["name"]} aberto no {BROWSER_NAME}'
             })
         return jsonify({
-            'success': False, 
-            'message': 'Diretório não encontrado'
+            'success': False,
+            'message': 'Site não encontrado'
         })
     except Exception as e:
         return jsonify({
-            'success': False, 
+            'success': False,
+            'message': str(e)
+        })
+
+@app.route('/open_all_sites')
+def open_all_sites():
+    try:
+        # Abre todos os sites em abas separadas
+        for site in SITES:
+            webbrowser.get('browser').open_new_tab(site['url'])
+            # Pequena pausa para evitar sobrecarga
+            time.sleep(0.5)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Todos os {len(SITES)} sites foram abertos no {BROWSER_NAME}'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
             'message': str(e)
         })
 
