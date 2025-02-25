@@ -1,9 +1,21 @@
 ﻿from flask import Flask, render_template, jsonify
+from flask_cors import CORS  # Importe o CORS
 import os
 import time
 import webbrowser
 
 app = Flask(__name__)
+CORS(app)  # Ative o CORS para toda a aplicação
+
+
+# Detectando o ambiente
+# No Render, a variável de ambiente RENDER estará definida ou PORT será 10000
+# Também verificamos se estamos em qualquer ambiente de produção
+IS_CLOUD = (os.environ.get('RENDER') is not None 
+           or os.environ.get('PORT') == '10000' 
+           or os.environ.get('ENVIRONMENT') == 'production'
+           or os.environ.get('PYTHON_ENV') == 'production')
+
 
 # Detectando o ambiente
 # No Render, a variável de ambiente RENDER estará definida
