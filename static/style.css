@@ -8,6 +8,7 @@
     --error-bg: #f8d7da;
     --firefox-color: #ff9400;
     --edge-color: #0078d7;
+    --cloud-color: #6610f2;
 }
 
 body {
@@ -54,6 +55,12 @@ h1 {
     background-color: rgba(0, 120, 215, 0.1);
     color: var(--edge-color);
     border: 1px solid var(--edge-color);
+}
+
+.browser-cloud {
+    background-color: rgba(102, 16, 242, 0.1);
+    color: var(--cloud-color);
+    border: 1px solid var(--cloud-color);
 }
 
 section {

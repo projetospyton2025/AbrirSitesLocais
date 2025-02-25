@@ -1,23 +1,29 @@
 ﻿from flask import Flask, render_template, jsonify
 import os
-import subprocess
 import time
 import webbrowser
 
 app = Flask(__name__)
 
-# Configuração do navegador
-FIREFOX_PATH = r"C:\Program Files\Firefox Developer Edition\firefox.exe"
-EDGE_PATH = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+# Detectando o ambiente
+# No Render, a variável de ambiente RENDER estará definida
+IS_CLOUD = os.environ.get('RENDER') is not None or os.environ.get('PORT') == '10000'
 
-# Verifica se o Firefox Developer está instalado
-if os.path.exists(FIREFOX_PATH):
-    webbrowser.register('browser', None, webbrowser.BackgroundBrowser(FIREFOX_PATH))
-    BROWSER_NAME = "Firefox Developer Edition"
+# Configuração do navegador (apenas para ambiente local)
+if not IS_CLOUD:
+    FIREFOX_PATH = r"C:\Program Files\Firefox Developer Edition\firefox.exe"
+    EDGE_PATH = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    
+    # Verifica se o Firefox Developer está instalado
+    if os.path.exists(FIREFOX_PATH):
+        webbrowser.register('browser', None, webbrowser.BackgroundBrowser(FIREFOX_PATH))
+        BROWSER_NAME = "Firefox Developer Edition"
+    else:
+        # Se não estiver, usa o Edge
+        webbrowser.register('browser', None, webbrowser.BackgroundBrowser(EDGE_PATH))
+        BROWSER_NAME = "Microsoft Edge"
 else:
-    # Se não estiver, usa o Edge
-    webbrowser.register('browser', None, webbrowser.BackgroundBrowser(EDGE_PATH))
-    BROWSER_NAME = "Microsoft Edge"
+    BROWSER_NAME = "Navegador Web"
 
 # Lista de sites externos para abrir
 SITES = [
@@ -78,7 +84,7 @@ def list_sites():
             'sites': SITES,
             'browser_info': {
                 'name': BROWSER_NAME,
-                'is_firefox_dev': os.path.exists(FIREFOX_PATH)
+                'is_cloud': IS_CLOUD
             }
         })
     except Exception as e:
@@ -89,11 +95,22 @@ def open_site(site_id):
     try:
         if 0 <= site_id < len(SITES):
             site = SITES[site_id]
-            # Abre o site no navegador selecionado
-            webbrowser.get('browser').open(site['url'])
+            
+            # Em ambiente local, tenta abrir com webbrowser
+            browser_opened = False
+            if not IS_CLOUD:
+                try:
+                    webbrowser.get('browser').open(site['url'])
+                    browser_opened = True
+                except:
+                    # Se falhar, o frontend lidará com isso
+                    pass
+            
             return jsonify({
                 'success': True,
-                'message': f'Site {site["name"]} aberto no {BROWSER_NAME}'
+                'message': f'Site {site["name"]} aberto' + (f' no {BROWSER_NAME}' if browser_opened else ''),
+                'url': site['url'],
+                'browser_opened': browser_opened
             })
         return jsonify({
             'success': False,
@@ -108,22 +125,34 @@ def open_site(site_id):
 @app.route('/open_all_sites')
 def open_all_sites():
     try:
-        # Primeiro site abre em nova janela
-        first_url = SITES[0]['url']
-        webbrowser.get('browser').open(first_url)
+        urls = [site['url'] for site in SITES]
         
-        # Pequena pausa para garantir que a primeira janela abra
-        time.sleep(0.5)
-        
-        # Resto dos sites abrem em novas abas na mesma janela
-        for site in SITES[1:]:
-            webbrowser.get('browser').open_new_tab(site['url'])
-            # Pequena pausa para evitar sobrecarga
-            time.sleep(0.3)
+        # Em ambiente local, tenta abrir com webbrowser
+        browser_opened = False
+        if not IS_CLOUD:
+            try:
+                # Primeiro site abre em nova janela
+                webbrowser.get('browser').open(urls[0])
+                
+                # Pequena pausa para garantir que a primeira janela abra
+                time.sleep(0.5)
+                
+                # Resto dos sites abrem em novas abas na mesma janela
+                for url in urls[1:]:
+                    webbrowser.get('browser').open_new_tab(url)
+                    # Pequena pausa para evitar sobrecarga
+                    time.sleep(0.3)
+                    
+                browser_opened = True
+            except:
+                # Se falhar, o frontend lidará com isso
+                pass
         
         return jsonify({
             'success': True,
-            'message': f'Todos os {len(SITES)} sites foram abertos no {BROWSER_NAME}'
+            'message': f'Todos os {len(SITES)} sites foram' + (f' abertos no {BROWSER_NAME}' if browser_opened else ' preparados para abrir'),
+            'urls': urls,
+            'browser_opened': browser_opened
         })
     except Exception as e:
         return jsonify({
@@ -134,7 +163,7 @@ def open_all_sites():
 if __name__ == '__main__':
     # Use a porta fornecida pelo ambiente ou 5001 como padrão
     port = int(os.environ.get('PORT', 5001))
-    # No ambiente local, o host pode ser 127.0.0.1 para maior segurança
-    # mas no Render precisa ser 0.0.0.0
-    host = '127.0.0.1' if os.environ.get('LOCAL') else '0.0.0.0'
-    app.run(host=host, port=port, debug=True)
+    # No Render precisa ser 0.0.0.0
+    host = '0.0.0.0'
+    debug = not IS_CLOUD  # Desativa debug em produção
+    app.run(host=host, port=port, debug=debug)
