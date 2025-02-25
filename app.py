@@ -18,35 +18,35 @@ SITES = [
         'url': 'https://estrategiasparamegasena.netlify.app/'
     },
     {
-        'name': 'Resumo Mega Sena',
+        'name': 'Estatísticas | Resumo',
         'url': 'https://resumomegasena.onrender.com/'
     },
     {
-        'name': 'Combinação I',
+        'name': 'Geradores | Combinação I',
         'url': 'https://combinacao-i.onrender.com/'
     },
     {
-        'name': 'Palpites Mega Sena',
+        'name': 'Estratégias | Palpites I',
         'url': 'https://palpitesmegasena.onrender.com/'
     },
     {
-        'name': 'Palpites MS',
+        'name': 'Estratégias | Palpites II',
         'url': 'https://palpitesms.onrender.com/'
     },
     {
-        'name': 'Colunas',
+        'name': 'Estratégias | Colunas',
         'url': 'https://colunas.onrender.com/'
     },
     {
-        'name': 'Histórico de Resultados 1A',
+        'name': 'Estratégias | Quadrantes',
         'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index1a'
     },
     {
-        'name': 'Histórico de Resultados 5',
+        'name': 'Resultados | Todos Sorteios + filtro avançado',
         'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index5'
     },
     {
-        'name': 'Palpites Megas',
+        'name': 'Estratégias | Palpites III',
         'url': 'https://palpitesmegas.onrender.com/'
     }
 ]
@@ -68,6 +68,8 @@ def redirect_to_site(site_id):
     if 0 <= site_id < len(SITES):
         return render_template('redirect.html', site=SITES[site_id])
     return "Site não encontrado", 404
+
+
 
 if __name__ == '__main__':
     # Use a porta fornecida pelo ambiente (importante para o Render)
