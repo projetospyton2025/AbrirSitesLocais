@@ -140,6 +140,13 @@ section {
     margin: 10px 0;
     text-align: center;
 }
+        footer {
+            color: #161515;
+            text-align: center;
+            padding: 5px;
+            margin-bottom: auto;
+            margin-top: 10px; /* Espaço acima do rodapé */
+         }
 
 /* Responsividade */
 @media (max-width: 768px) {
