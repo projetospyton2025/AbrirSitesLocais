@@ -44,23 +44,32 @@ SITES = [
         'name': 'Estatísticas | Resumo',
         'url': 'https://resumomegasena.onrender.com/'
     },
-    {
-        'name': 'Geradores | Combinação I',
-        'url': 'https://combinacao-i.onrender.com/'
-    },
-    {
+           {
         'name': 'Estatísticas | Dígitos',
         'url': 'https://resultadosdigitosmegasena.onrender.com/'
-    }
-]
-"""
-# Lista de sites externos para abrir
-SITES = [
+    },
     {
         'name': 'Geradores | Combinação I',
         'url': 'https://combinacao-i.onrender.com/'
     },
-       {
+    {
+        'name': 'Estratégias | Palpites II',
+        'url': 'https://palpitesms.onrender.com/'
+    },
+]
+"""
+
+# Lista de sites externos para abrir
+SITES = [
+        {
+        'name': 'Estratégias | Palpites II',
+        'url': 'https://palpitesms.onrender.com/'
+    },
+        {
+        'name': 'Geradores | Combinação I',
+        'url': 'https://combinacao-i.onrender.com/'
+    },
+               {
         'name': 'Estatísticas | Dígitos',
         'url': 'https://resultadosdigitosmegasena.onrender.com/'
     },
@@ -69,8 +78,6 @@ SITES = [
         'url': 'https://resumomegasena.onrender.com/'
     },
 ]
-
-
 
 @app.route('/')
 def index():
