@@ -37,20 +37,9 @@ if not IS_CLOUD:
 else:
     BROWSER_NAME = "Navegador Web"
 
+"""
 # Lista de sites externos para abrir
 SITES = [
-    {
-        'name': 'Portifólio do Maia',
-        'url': 'https://portifoliodomaia.netlify.app/'
-    },
-    {
-        'name': 'Loterias Caixa',
-        'url': 'https://loteriascaixa.netlify.app/'
-    },
-    {
-        'name': 'Estratégias para Mega Sena',
-        'url': 'https://estrategiasparamegasena.netlify.app/'
-    },
     {
         'name': 'Estatísticas | Resumo',
         'url': 'https://resumomegasena.onrender.com/'
@@ -60,34 +49,28 @@ SITES = [
         'url': 'https://combinacao-i.onrender.com/'
     },
     {
-        'name': 'Estratégias | Resultados | Dígitos',
+        'name': 'Estatísticas | Dígitos',
+        'url': 'https://resultadosdigitosmegasena.onrender.com/'
+    }
+]
+"""
+# Lista de sites externos para abrir
+SITES = [
+    {
+        'name': 'Geradores | Combinação I',
+        'url': 'https://combinacao-i.onrender.com/'
+    },
+       {
+        'name': 'Estatísticas | Dígitos',
         'url': 'https://resultadosdigitosmegasena.onrender.com/'
     },
     {
-        'name': 'Estratégias | Palpites I',
-        'url': 'https://palpitesmegasena.onrender.com/'
+        'name': 'Estatísticas | Resumo',
+        'url': 'https://resumomegasena.onrender.com/'
     },
-    {
-        'name': 'Estratégias | Palpites II',
-        'url': 'https://palpitesms.onrender.com/'
-    },
-    {
-        'name': 'Estratégias | Colunas',
-        'url': 'https://colunas.onrender.com/'
-    },
-    {
-        'name': 'Estratégias | Quadrantes',
-        'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index1a'
-    },
-    {
-        'name': 'Resultados | Todos Sorteios + filtro avançado',
-        'url': 'https://estrategiasparamegasena.netlify.app/historicoderesultados/index5'
-    },
-    {
-        'name': 'Estratégias | Palpites III',
-        'url': 'https://palpitesmegas.onrender.com/'
-    }
 ]
+
+
 
 @app.route('/')
 def index():
