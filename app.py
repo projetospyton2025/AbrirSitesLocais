@@ -1,4 +1,4 @@
-﻿from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify
 from flask_cors import CORS  # Importe o CORS
 import os
 import time
@@ -37,30 +37,12 @@ if not IS_CLOUD:
 else:
     BROWSER_NAME = "Navegador Web"
 
-"""
 # Lista de sites externos para abrir
 SITES = [
     {
-        'name': 'Estatísticas | Resumo',
-        'url': 'https://resumomegasena.onrender.com/'
+        'name': 'Estatísticas | Calculadora Combinações (Dígitos)',
+        'url': 'https://combinacao-ii.onrender.com//'
     },
-           {
-        'name': 'Estatísticas | Dígitos',
-        'url': 'https://resultadosdigitosmegasena.onrender.com/'
-    },
-    {
-        'name': 'Geradores | Combinação I',
-        'url': 'https://combinacao-i.onrender.com/'
-    },
-    {
-        'name': 'Estratégias | Palpites II',
-        'url': 'https://palpitesms.onrender.com/'
-    },
-]
-"""
-
-# Lista de sites externos para abrir
-SITES = [
        {
         'name': 'Estatísticas | Análise de Palpites (Digitos)',
         'url': 'https://analisedospalpitesms.onrender.com/'
@@ -74,7 +56,7 @@ SITES = [
         'url': 'https://combinacao-i.onrender.com/'
     },
         {
-        'name': 'Estatísticas | Dígitos',
+        'name': 'Estatísticas | Análise de Dígitos',
         'url': 'https://resultadosdigitosmegasena.onrender.com/'
     },
         {
